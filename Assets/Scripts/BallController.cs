@@ -13,6 +13,9 @@ public class BallController : MonoBehaviour
     private float horizontalLimit;
 
     public bool gameOn;
+    public bool wait;
+    private float waitTime;
+    private float timer;
     private PlayerController player1, player2;
 
     public AudioClip hit;
@@ -22,8 +25,11 @@ public class BallController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        speed = 500.0f;
-        horizontalLimit = 10.0f;
+        speed = 300.0f;
+        horizontalLimit = 5.5f;
+        wait = false;
+        waitTime = 1.5f;
+        timer = 0.0f;
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -39,12 +45,16 @@ public class BallController : MonoBehaviour
         return randomDirection;
     }
 
+    void startMatch()
+    {
+        direction = getRandomDirection();
+        rb.AddForce(direction * speed);
+    }
+
     private void Start()
     {
         gameOn = true;
-
-        direction = getRandomDirection();
-        rb.AddForce(direction * speed);
+        startMatch();
 
         player1 = (PlayerController)GameObject.Find("Player1").GetComponent(typeof(PlayerController));
         player2 = (PlayerController)GameObject.Find("Player2").GetComponent(typeof(PlayerController));
@@ -55,9 +65,13 @@ public class BallController : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         transform.position = new Vector2( 0f, Random.Range(-3f, 3f) );
         rb.constraints = RigidbodyConstraints2D.None;
+    }
 
-        direction = getRandomDirection(); 
-        rb.AddForce(direction * speed);
+    void waitPosition()
+    {
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        transform.position = new Vector2(0f, -5f);
+        rb.constraints = RigidbodyConstraints2D.None;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -85,13 +99,22 @@ public class BallController : MonoBehaviour
                 Score scoreP2 = (Score)GameObject.Find("ScoreP2").GetComponent(typeof(Score));
                 scoreP2.IncreaseScore();
             }
-            
             //Play Miss clip
             audioSource.PlayOneShot(miss, 0.5f);
-            //Reset position of players and ball
-            ResetPosition();
-            player1.ResetPosition();
-            player2.ResetPosition();
+            wait = true;
+            waitPosition();
+        }
+        //Delay after a goal
+        if (wait)
+        {
+            timer += Time.deltaTime;
+            if (timer >= waitTime)
+            {
+                ResetPosition();
+                startMatch();
+                timer = 0.0f;
+                wait = false;
+            }
         }
     }
 }
