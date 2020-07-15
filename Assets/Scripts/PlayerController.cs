@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     {
         initialPosition = transform.position;
         movement = 0.1f;
-        verticalLimit = 3.4f;
+        verticalLimit = 3.5f;
         if (transform.position.x < 0)    //Player1 (left)
         {
             upKey = "w";
@@ -26,11 +26,6 @@ public class PlayerController : MonoBehaviour
             upKey = "up";
             downKey = "down";
         }
-    }
-
-    public void ResetPosition()
-    {
-        transform.position = initialPosition;
     }
 
     private bool positionIsValid(float y)

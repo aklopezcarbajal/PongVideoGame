@@ -16,7 +16,6 @@ public class BallController : MonoBehaviour
     public bool wait;
     private float waitTime;
     private float timer;
-    private PlayerController player1, player2;
 
     public AudioClip hit;
     public AudioClip miss;
@@ -55,9 +54,6 @@ public class BallController : MonoBehaviour
     {
         gameOn = true;
         startMatch();
-
-        player1 = (PlayerController)GameObject.Find("Player1").GetComponent(typeof(PlayerController));
-        player2 = (PlayerController)GameObject.Find("Player2").GetComponent(typeof(PlayerController));
     }
 
     void ResetPosition()
